@@ -1,0 +1,17 @@
+.DS_Store
+.idea/
+*.iml
+.vscode/
+.env
+*.env
+backend/target/
+backend/.mvn/
+backend/mvnw
+backend/mvnw.cmd
+node_modules/
+frontend/node_modules/
+frontend/build/
+mcp-server/node_modules/
+mcp-server/dist/
+agent/node_modules/
+agent/dist/
