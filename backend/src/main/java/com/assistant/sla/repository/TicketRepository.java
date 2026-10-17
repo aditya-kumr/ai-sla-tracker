@@ -6,6 +6,8 @@ import com.assistant.sla.model.Ticket;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -14,14 +16,20 @@ import java.util.List;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
-    // Filter tickets by status with pagination
     Page<Ticket> findByStatus(Status status, Pageable pageable);
 
-    // Filter tickets by priority with pagination
     Page<Ticket> findByPriority(Priority priority, Pageable pageable);
 
-    // Used for SLA calculation (Block 3 preview)
-    List<Ticket> findByStatusNotAndSlaDueAtBefore(Status status, LocalDateTime now);
+    // Fetch active tickets where SLA due date is between now and the threshold time
+    @Query("SELECT t FROM Ticket t WHERE t.status NOT IN ('RESOLVED', 'CLOSED') " +
+            "AND t.slaDueAt IS NOT NULL " +
+            "AND t.slaDueAt BETWEEN :now AND :threshold")
+    List<Ticket> findAtRiskTickets(@Param("now") LocalDateTime now,
+                                   @Param("threshold") LocalDateTime threshold);
 
-    List<Ticket> findByStatusNotAndSlaDueAtBetween(Status status, LocalDateTime start, LocalDateTime end);
+    // Fetch active tickets where SLA due date has passed
+    @Query("SELECT t FROM Ticket t WHERE t.status NOT IN ('RESOLVED', 'CLOSED') " +
+            "AND t.slaDueAt IS NOT NULL " +
+            "AND t.slaDueAt < :now")
+    List<Ticket> findBreachedTickets(@Param("now") LocalDateTime now);
 }

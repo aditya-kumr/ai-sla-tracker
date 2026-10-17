@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -74,5 +75,24 @@ public class TicketService {
             throw new RuntimeException("Ticket not found with id: " + id);
         }
         ticketRepository.deleteById(id);
+    }
+    @Transactional(readOnly = true)
+    public List<TicketResponse> getAtRiskTickets(int thresholdHours) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime threshold = now.plusHours(thresholdHours);
+
+        return ticketRepository.findAtRiskTickets(now, threshold)
+                .stream()
+                .map(TicketResponse::fromEntity)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<TicketResponse> getBreachedTickets() {
+        LocalDateTime now = LocalDateTime.now();
+        return ticketRepository.findBreachedTickets(now)
+                .stream()
+                .map(TicketResponse::fromEntity)
+                .toList();
     }
 }

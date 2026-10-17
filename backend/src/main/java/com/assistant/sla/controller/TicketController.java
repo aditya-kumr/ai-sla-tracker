@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/tickets")
 @RequiredArgsConstructor
@@ -60,5 +62,15 @@ public class TicketController {
     public ResponseEntity<Void> deleteTicket(@PathVariable Long id) {
         ticketService.deleteTicket(id);
         return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/at-risk")
+    public ResponseEntity<List<TicketResponse>> getAtRiskTickets(
+            @RequestParam(defaultValue = "4") int thresholdHours) {
+        return ResponseEntity.ok(ticketService.getAtRiskTickets(thresholdHours));
+    }
+
+    @GetMapping("/breached")
+    public ResponseEntity<List<TicketResponse>> getBreachedTickets() {
+        return ResponseEntity.ok(ticketService.getBreachedTickets());
     }
 }

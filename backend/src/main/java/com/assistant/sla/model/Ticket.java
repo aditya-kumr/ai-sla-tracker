@@ -6,7 +6,14 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tickets")
+@Table(
+        name = "tickets",
+        indexes = {
+                @Index(name = "idx_tickets_status", columnList = "status"),
+                @Index(name = "idx_tickets_sla_due_at", columnList = "slaDueAt"),
+                @Index(name = "idx_tickets_status_sla_due", columnList = "status, slaDueAt")
+        }
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
