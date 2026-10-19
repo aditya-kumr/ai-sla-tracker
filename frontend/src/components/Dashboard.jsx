@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
-import { AlertTriangle, Clock, RefreshCw, LogOut, Sun, Moon } from 'lucide-react';
+import { AlertTriangle, Clock, RefreshCw, LogOut, Sun, Moon, MessageSquare } from 'lucide-react';
+import ChatDrawer from './ChatDrawer';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -12,6 +13,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [showAtRiskOnly, setShowAtRiskOnly] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   useEffect(() => {
     fetchTickets();
@@ -64,6 +66,14 @@ export default function Dashboard() {
           <span className="user-info">Logged in as: <strong>{user?.fullName}</strong> ({user?.role})</span>
         </div>
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <button 
+            onClick={() => setIsChatOpen(true)} 
+            className="refresh-btn" 
+            title="Open AI Assistant"
+            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, padding: '0.5rem 0.875rem' }}
+          >
+            <MessageSquare size={16} color="#2563eb" /> AI Assistant
+          </button>
           <button onClick={toggleTheme} className="refresh-btn" title="Toggle Theme">
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
           </button>
@@ -160,6 +170,9 @@ export default function Dashboard() {
           </table>
         </div>
       )}
+
+      {/* Slide-out AI Assistant Chat Drawer */}
+      <ChatDrawer isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
     </div>
   );
 }
