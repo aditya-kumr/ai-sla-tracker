@@ -178,3 +178,34 @@
 .priority-high { background-color: #ffedd5; color: #c2410c; }
 .priority-medium { background-color: #fef9c3; color: #854d0e; }
 .priority-low { background-color: #f1f5f9; color: #475569; }
+
+/* Split Layout Workspace Container */
+.app-workspace {
+  display: flex;
+  width: 100vw;
+  height: 100vh; /* Lock entire viewport height */
+  overflow: hidden; /* Prevent the page itself from scrolling */
+  background-color: var(--bg-main);
+  box-sizing: border-box;
+}
+
+.main-panel {
+  flex: 1;
+  padding: 1.5rem;
+  height: 100vh;
+  overflow-y: auto; /* Let the table scroll on its own */
+  box-sizing: border-box;
+}
+
+.side-chat-panel {
+  width: 400px;
+  min-width: 350px;
+  max-width: 450px;
+  height: 100vh; /* Lock sidebar to exact screen height */
+  border-left: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  display: flex;
+  flex-direction: column; /* Force downward linear block stacking */
+  flex-shrink: 0; /* Keep size constant */
+  box-sizing: border-box;
+}

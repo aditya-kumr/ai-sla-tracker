@@ -59,118 +59,126 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="dashboard-container">
-      <header className="dashboard-header">
-        <div>
-          <h1 className="dashboard-title">AI SLA Assistant Dashboard</h1>
-          <span className="user-info">Logged in as: <strong>{user?.fullName}</strong> ({user?.role})</span>
-        </div>
-        <div className="header-actions">
-          <button 
-            onClick={() => setIsChatOpen(true)} 
-            title="Open AI Assistant"
-          >
-            <MessageSquare size={16} color="#2563eb" />
-            <span>AI Assistant</span>
-          </button>
-          <button onClick={toggleTheme} title="Toggle Theme">
-            {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-          </button>
-          <button onClick={logout} className="logout-btn">
-            <LogOut size={16} style={{ marginRight: '6px' }} /> Logout
-          </button>
-        </div>
-      </header>
+    <div className={`app-workspace ${isChatOpen ? 'split-mode' : ''}`}>
+      {/* Main Dashboard Panel */}
+      <div className="main-panel">
+        <header className="dashboard-header">
+          <div>
+            <h1 className="dashboard-title">AI SLA Assistant Dashboard</h1>
+            <span className="user-info">Logged in as: <strong>{user?.fullName}</strong> ({user?.role})</span>
+          </div>
+          <div className="header-actions">
+            <button 
+              onClick={() => setIsChatOpen(!isChatOpen)} 
+              title="Toggle AI Assistant Panel"
+              className={isChatOpen ? 'active' : ''}
+            >
+              <MessageSquare size={16} color="#2563eb" />
+              <span>{isChatOpen ? 'Close Chat' : 'AI Assistant'}</span>
+            </button>
+            <button onClick={toggleTheme} title="Toggle Theme">
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+            <button onClick={logout} className="logout-btn">
+              <LogOut size={16} style={{ marginRight: '6px' }} /> Logout
+            </button>
+          </div>
+        </header>
 
-      <div className="filter-bar">
-        <div className="filter-group">
-          <label className="filter-label">Filter Status:</label>
-          <select 
-            value={statusFilter} 
-            onChange={(e) => { setShowAtRiskOnly(false); setStatusFilter(e.target.value); }}
-            className="select-dropdown"
-          >
-            <option value="ALL">All Statuses</option>
-            <option value="OPEN">OPEN</option>
-            <option value="IN_PROGRESS">IN_PROGRESS</option>
-            <option value="RESOLVED">RESOLVED</option>
-            <option value="CLOSED">CLOSED</option>
-          </select>
+        <div className="filter-bar">
+          <div className="filter-group">
+            <label className="filter-label">Filter Status:</label>
+            <select 
+              value={statusFilter} 
+              onChange={(e) => { setShowAtRiskOnly(false); setStatusFilter(e.target.value); }}
+              className="select-dropdown"
+            >
+              <option value="ALL">All Statuses</option>
+              <option value="OPEN">OPEN</option>
+              <option value="IN_PROGRESS">IN_PROGRESS</option>
+              <option value="RESOLVED">RESOLVED</option>
+              <option value="CLOSED">CLOSED</option>
+            </select>
 
-          <button 
-            onClick={() => setShowAtRiskOnly(!showAtRiskOnly)}
-            className={`at-risk-btn ${showAtRiskOnly ? 'active' : 'inactive'}`}
-          >
-            <AlertTriangle size={16} style={{ marginRight: '6px' }} />
-            {showAtRiskOnly ? 'Showing At-Risk Tickets' : 'Filter At-Risk (< 4h)'}
+            <button 
+              onClick={() => setShowAtRiskOnly(!showAtRiskOnly)}
+              className={`at-risk-btn ${showAtRiskOnly ? 'active' : 'inactive'}`}
+            >
+              <AlertTriangle size={16} style={{ marginRight: '6px' }} />
+              {showAtRiskOnly ? 'Showing At-Risk Tickets' : 'Filter At-Risk (< 4h)'}
+            </button>
+          </div>
+
+          <button onClick={fetchTickets} className="refresh-btn" title="Refresh Tickets">
+            <RefreshCw size={16} />
           </button>
         </div>
 
-        <button onClick={fetchTickets} className="refresh-btn" title="Refresh Tickets">
-          <RefreshCw size={16} />
-        </button>
+        {loading ? (
+          <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading tickets...</div>
+        ) : (
+          <div className="table-card">
+            <table className="ticket-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>SLA Due At</th>
+                  <th>Assignee</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(tickets || []).map((t) => (
+                  <tr key={t.id}>
+                    <td>#{t.id}</td>
+                    <td>
+                      <strong>{t.title}</strong>
+                      {t.atRisk && (
+                        <span className="badge-at-risk">
+                          <Clock size={12} style={{ marginRight: '4px' }} /> AT RISK
+                        </span>
+                      )}
+                      {t.breached && (
+                        <span className="badge-breached">
+                          <AlertTriangle size={12} style={{ marginRight: '4px' }} /> BREACHED
+                        </span>
+                      )}
+                    </td>
+                    <td>
+                      <span className={getPriorityClass(t.priority)}>{t.priority}</span>
+                    </td>
+                    <td>{t.status}</td>
+                    <td>{new Date(t.slaDueAt).toLocaleString()}</td>
+                    <td>{t.assignee}</td>
+                    <td>
+                      <select
+                        value={t.status}
+                        onChange={(e) => handleStatusChange(t.id, e.target.value)}
+                        className="action-select"
+                      >
+                        <option value="OPEN">OPEN</option>
+                        <option value="IN_PROGRESS">IN_PROGRESS</option>
+                        <option value="RESOLVED">RESOLVED</option>
+                        <option value="CLOSED">CLOSED</option>
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
-      {loading ? (
-        <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-secondary)' }}>Loading tickets...</div>
-      ) : (
-        <div className="table-card">
-          <table className="ticket-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>SLA Due At</th>
-                <th>Assignee</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {(tickets || []).map((t) => (
-                <tr key={t.id}>
-                  <td>#{t.id}</td>
-                  <td>
-                    <strong>{t.title}</strong>
-                    {t.atRisk && (
-                      <span className="badge-at-risk">
-                        <Clock size={12} style={{ marginRight: '4px' }} /> AT RISK
-                      </span>
-                    )}
-                    {t.breached && (
-                      <span className="badge-breached">
-                        <AlertTriangle size={12} style={{ marginRight: '4px' }} /> BREACHED
-                      </span>
-                    )}
-                  </td>
-                  <td>
-                    <span className={getPriorityClass(t.priority)}>{t.priority}</span>
-                  </td>
-                  <td>{t.status}</td>
-                  <td>{new Date(t.slaDueAt).toLocaleString()}</td>
-                  <td>{t.assignee}</td>
-                  <td>
-                    <select
-                      value={t.status}
-                      onChange={(e) => handleStatusChange(t.id, e.target.value)}
-                      className="action-select"
-                    >
-                      <option value="OPEN">OPEN</option>
-                      <option value="IN_PROGRESS">IN_PROGRESS</option>
-                      <option value="RESOLVED">RESOLVED</option>
-                      <option value="CLOSED">CLOSED</option>
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Side-by-Side Embedded Chat Panel */}
+      {isChatOpen && (
+        <div className="side-chat-panel">
+          <ChatDrawer isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
         </div>
       )}
-
-      {/* Slide-out AI Assistant Chat Drawer */}
-      <ChatDrawer isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
     </div>
   );
 }

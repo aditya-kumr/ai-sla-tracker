@@ -61,28 +61,13 @@
 .btn-confirm { background: #22c55e; color: #fff; border-radius: var(--radius-sm); }
 .btn-cancel { background: #ef4444; color: #fff; border-radius: var(--radius-sm); }
 
-.chat-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.4);
-  z-index: 1000;
-  display: flex;
-  justify-content: flex-end;
-}
 
 .chat-drawer {
-  width: 420px;
-  max-width: 100%;
+  width: 100%;
   height: 100%;
-  background: var(--bg-card, #ffffff);
-  border-left: 1px solid var(--border-color, #e2e8f0);
-  box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+  background-color: var(--bg-card);
   display: flex;
   flex-direction: column;
-  animation: slideIn 0.25s ease-out;
 }
 
 @keyframes slideIn {
@@ -92,4 +77,88 @@
   to {
     transform: translateX(0);
   }
+}
+/* Sidebar Embedded Chat Box Wrapper */
+.chat-drawer {
+  width: 100%;
+  height: 100vh; /* Occupy exact container height */
+  display: flex;
+  flex-direction: column; /* Stack top-to-bottom */
+  background-color: var(--bg-card, #ffffff);
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Fixed Header */
+.chat-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--bg-card, #ffffff);
+  flex-shrink: 0; /* Never shrink or slide */
+}
+
+/* Scrolling Messages Area */
+.chat-messages {
+  flex: 1; /* Consume ALL available vertical spacer room */
+  padding: 1.25rem;
+  overflow-y: auto; /* Scroll overflowing chat logs smoothly */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--bg-main, #f8fafc);
+  box-sizing: border-box;
+}
+
+/* Message Bubble constraints */
+.chat-message {
+  display: flex;
+  gap: 0.75rem;
+  max-width: 88%; /* Bubble does not stretch full screen */
+}
+
+.chat-message.user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.chat-message.model {
+  align-self: flex-start;
+}
+
+/* Fixed Input Bar at Bottom */
+.chat-input-area {
+  padding: 1rem;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+  background-color: var(--bg-card, #ffffff);
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0; /* Keep locked to the bottom */
+  box-sizing: border-box;
+}
+
+/* Control elements spacing */
+.chat-input-area input {
+  flex: 1;
+  padding: 0.65rem 0.875rem;
+  border: 1px solid var(--border-color, #cbd5e1);
+  border-radius: 8px;
+  outline: none;
+  background-color: var(--bg-card, #ffffff);
+  color: var(--text-primary, #0f172a);
+  font-size: 0.875rem;
+}
+
+.chat-input-area button {
+  background-color: #2563eb;
+  color: #ffffff;
+  border: none;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
