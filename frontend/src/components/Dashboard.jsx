@@ -65,16 +65,15 @@ export default function Dashboard() {
           <h1 className="dashboard-title">AI SLA Assistant Dashboard</h1>
           <span className="user-info">Logged in as: <strong>{user?.fullName}</strong> ({user?.role})</span>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <div className="header-actions">
           <button 
             onClick={() => setIsChatOpen(true)} 
-            className="refresh-btn" 
             title="Open AI Assistant"
-            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, padding: '0.5rem 0.875rem' }}
           >
-            <MessageSquare size={16} color="#2563eb" /> AI Assistant
+            <MessageSquare size={16} color="#2563eb" />
+            <span>AI Assistant</span>
           </button>
-          <button onClick={toggleTheme} className="refresh-btn" title="Toggle Theme">
+          <button onClick={toggleTheme} title="Toggle Theme">
             {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
           </button>
           <button onClick={logout} className="logout-btn">
@@ -155,8 +154,7 @@ export default function Dashboard() {
                     <select
                       value={t.status}
                       onChange={(e) => handleStatusChange(t.id, e.target.value)}
-                      className="select-dropdown"
-                      style={{ padding: '0.25rem 0.5rem' }}
+                      className="action-select"
                     >
                       <option value="OPEN">OPEN</option>
                       <option value="IN_PROGRESS">IN_PROGRESS</option>

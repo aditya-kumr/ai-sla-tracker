@@ -17,6 +17,7 @@ export class McpClientManager {
     const transport = new StdioClientTransport({
       command: 'node',
       args: [serverPath],
+      stderr: 'inherit', // Redirect MCP stderr to prevent stdout contamination
     });
 
     this.client = new Client(
@@ -25,7 +26,7 @@ export class McpClientManager {
     );
 
     await this.client.connect(transport);
-    console.log('Successfully connected to MCP Server via Stdio');
+    console.log('[AGENT LOG] Connected to MCP Server over Stdio');
     return this.client;
   }
 }
